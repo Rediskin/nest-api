@@ -52,6 +52,9 @@ export class User {
   @Column({name: "password", type: "varchar"})
   password!: string;
 
+  @Column({name: "old_password", type: "varchar", default: null})
+  oldPassword!: string;
+
   @Column({name: "created_at", type: "timestamp", default: () => "CURRENT_TIMESTAMP"})
   createdAt!: Date;
 }

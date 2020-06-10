@@ -72,6 +72,9 @@ export class RegistrationBody {
 
   @IsString()
   role!: string;
+}
 
-
+export class RestorePasswordBody{
+  @IsString()
+  password!: string;
 }

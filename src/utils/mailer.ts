@@ -3,7 +3,6 @@ import { BadRequestException } from '@nestjs/common';
 import { lang } from './lang';
 
 
-
 const sendEmail = async (msg: any): Promise<void> => {
   if(process.env.SMTP_HOST !== undefined &&
     process.env.SMTP_PORT !== undefined &&

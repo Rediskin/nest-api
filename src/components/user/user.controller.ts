@@ -43,4 +43,10 @@ export class UserController {
   forgotPassword(@Query() query: ForgotPasswordQuery): Promise<void> {
     return this.userService.forgotPassword(query.email);
   }
+
+  @Post("/restorePassword")
+  @HttpCode(201)
+  restorePassword(@Body() body: RestorePasswordBody, @AuthUser() authUser: any): Promise<void>{
+    return this.userService.restorePassword(body.password, authUser);
+  }
 }
