@@ -119,7 +119,26 @@ export class UserService {
     await mailer.sendForgotPasswordEmail(email,token);
   };
 
-
+  public restorePassword = async (password: string, authUser: any): Promise<void> => {
+    const user = await usersRepository.getUserById(authUser.id);
+    if(user.oldPassword === null){
+      const pass = await crypto.pbkdf2Sync(password, process.env.SECRET, 1000, 64, "sha512");
+      const passHash = pass.toString('hex');
+      const token = await jwt.sign({ id: user.id, role: user.role });
+      await usersRepository.updateOneById(user.id, { token: token, password: passHash, oldPassword: passHash });
+    } else {
+      const pass = await crypto.pbkdf2Sync(password, process.env.SECRET, 1000, 64, "sha512");
+      const passHash = pass.toString('hex');
+      if (user.oldPassword === passHash) {
+        throw new BadRequestException({
+          status: 400,
+          error: lang["EN"].duplicate_password,
+        }, "400");
+      }
+      const token = await jwt.sign({ id: user.id, role: user.role });
+      await usersRepository.updateOneById(user.id, { token: token, password: passHash });
+    }
+  };
 }
 
 

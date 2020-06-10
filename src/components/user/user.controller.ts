@@ -1,6 +1,13 @@
 import { Body, Controller, Get, HttpCode, Post, Query } from '@nestjs/common';
 import { UserService } from './user.service';
-import { ChangePasswordBody, ForgotPasswordQuery, LoginBody, RegistrationBody, UpdateOneByIdBody } from './user.dtos';
+import {
+  ChangePasswordBody,
+  ForgotPasswordQuery,
+  LoginBody,
+  RegistrationBody,
+  RestorePasswordBody,
+  UpdateOneByIdBody,
+} from './user.dtos';
 import { AuthUser } from '../../decorators/authUser';
 
 @Controller()
