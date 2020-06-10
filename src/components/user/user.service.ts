@@ -1,12 +1,12 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { LoginBody, RegistrationBody } from './user.dtos';
+import { ChangePasswordBody, LoginBody, RegistrationBody, UpdateOneByIdBody } from './user.dtos';
 import * as crypto from 'crypto';
 import { jwt } from '../../utils/jwt';
 import { usersRepository } from './user.repository';
-import { AuthorizationError, RequestError } from '../../utils/app-errors';
 import { User, UserStatuses } from './user.entities';
 import { lang } from '../../utils/lang';
-import { isEmail } from 'class-validator';
+import * as randomstring from 'randomstring';
+import { mailer } from '../../utils/mailer';
 
 @Injectable()
 export class UserService {
@@ -32,7 +32,30 @@ export class UserService {
     }
   };
 
+  public getUser = async (authUser: any): Promise<any> => {
+    return await usersRepository.getUserPublicData(authUser.id);
+  };
 
+  public  updateOneById = async (body: UpdateOneByIdBody, authUser: any): Promise<void> => {
+    const user = await usersRepository.getUserById(authUser.id);
+    await usersRepository.updateOneById(user.id, body );
+
+  }
+
+  public changePassword = async (body: ChangePasswordBody, authUser: any): Promise<any> => {
+    const user = await usersRepository.getUserById(authUser.id);
+    const oldPass = await crypto.pbkdf2Sync(body.oldPassword, process.env.SECRET, 1000, 64, "sha512");
+    const oldPassHash = oldPass.toString('hex');
+    if (user.password !== oldPassHash){
+      throw new BadRequestException({
+        status: 400,
+        error: lang["EN"].password_is_invalid,
+      }, "400");
+    }
+    const newPass = await crypto.pbkdf2Sync(body.newPassword, process.env.SECRET, 1000, 64, "sha512");
+    const newPassHash = newPass.toString('hex');
+    await usersRepository.updateOneById(user.id,{password: newPassHash});
+  };
 
   public login = async (body: LoginBody): Promise<any> => {
     const user = await usersRepository.getUserByEmail(body.login);
@@ -77,6 +100,17 @@ export class UserService {
     const token = await jwt.sign({ id: user.id, role: user.role });
     await usersRepository.updateOneById(user.id, { token: token });
     return { data: token };
+  };
+
+  public forgotPassword = async (email: string): Promise<void> => {
+    const user = await usersRepository.getUserByEmail(email);
+    const pass = randomstring.generate({length: 16, charset: "alphanumeric"});
+    const password = await crypto.pbkdf2Sync(pass, process.env.SECRET, 1000, 64, "sha512");
+    const passHash = password.toString('hex');
+    const token = await jwt.sign({ id: user.id, role: user.role });
+    await usersRepository.updateOneById(user.id, { token: token, password: passHash });
+    await mailer.sendForgotPasswordEmail(email,token);
+
   };
 }
 

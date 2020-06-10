@@ -9,7 +9,8 @@ export class Authenticate implements NestMiddleware {
     // const authenticate = async (req: any, res: any, next: () => void): Promise<void> => {
       const publicUrls = [
         '/login',
-        '/registration'
+        '/registration',
+        '/forgotPassword',
       ];
       if (publicUrls.includes(req.baseUrl)) {
         next();

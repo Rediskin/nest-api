@@ -36,6 +36,30 @@ export class UsersRepository {
     return result;
   };
 
+  public getUserPublicData = async (id: number): Promise<any> => {
+    const result = await getRepository(User)
+      .createQueryBuilder("users")
+      .where("users.id = :id", {id: id})
+      .getOne();
+    if (result === undefined) {
+      throw new BadRequestException({
+        status:400,
+        error: lang["EN"].user_not_found,
+      }, "400");
+    }
+    return {
+      id: result.id,
+      username: result.username,
+      firstName: result.firstName,
+      lastName: result.lastName,
+      email: result.email,
+      role: result.role,
+      birthday: result.birthday,
+      gender: result.gender,
+      createdAt: result.createdAt
+    };
+  };
+
   public getUserByEmail = async (email: string): Promise<User> => {
     const result = await getRepository(User)
       .createQueryBuilder("users")

@@ -25,17 +25,20 @@
     "type": "git",
     "url": "https://github.com/Rediskin/nest-api.git"
   },
-
   "dependencies": {
     "@nestjs/common": "^7.0.0",
     "@nestjs/core": "^7.0.0",
     "@nestjs/platform-express": "^7.0.0",
     "@types/dotenv": "^8.2.0",
     "@types/jsonwebtoken": "^8.5.0",
+    "@types/nodemailer": "^6.4.0",
+    "@types/randomstring": "^1.1.6",
     "class-validator": "^0.12.2",
     "dotenv": "^8.2.0",
     "jsonwebtoken": "^8.5.1",
     "mysql": "^2.18.1",
+    "nodemailer": "^6.4.6",
+    "randomstring": "^1.1.5",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^6.5.4",
