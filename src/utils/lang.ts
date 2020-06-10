@@ -12,5 +12,7 @@ export const lang = {
     email_already_used: "user with this email has already used",
     front_host_not_found: "front_host_not_found",
     duplicate_password: "duplicate_password",
+    admin_not_found: "admin_not_found",
+    permitions_denied: "permitions_denied",
   }
 }

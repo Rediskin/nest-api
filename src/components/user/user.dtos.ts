@@ -78,3 +78,28 @@ export class RestorePasswordBody{
   @IsString()
   password!: string;
 }
+
+export class AdminRegistrationBody {
+
+  @IsString()
+  username!: string;
+
+  @IsEmail()
+  email!: string;
+
+  @IsString()
+  password!: string;
+
+  @IsString()
+  firstName!: string;
+
+  @IsString()
+  lastName!: string;
+
+  @IsString()
+  birthday!: string;
+
+  @IsString()
+  gender!: string;
+
+}

@@ -1,9 +1,9 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { ChangePasswordBody, LoginBody, RegistrationBody, UpdateOneByIdBody } from './user.dtos';
+import { AdminRegistrationBody, ChangePasswordBody, LoginBody, RegistrationBody, UpdateOneByIdBody } from './user.dtos';
 import * as crypto from 'crypto';
 import { jwt } from '../../utils/jwt';
 import { usersRepository } from './user.repository';
-import { User, UserStatuses } from './user.entities';
+import { User, UserRoles, UserStatuses } from './user.entities';
 import { lang } from '../../utils/lang';
 import * as randomstring from 'randomstring';
 import { mailer } from '../../utils/mailer';
@@ -101,6 +101,7 @@ export class UserService {
       password: passHash,
       birthday: body.birthday,
       oldPassword: passHash,
+      superAdmin: false,
     }
     const userId = await usersRepository.insertOne(data);
     const user = await usersRepository.getUserById(userId);
@@ -139,6 +140,61 @@ export class UserService {
       await usersRepository.updateOneById(user.id, { token: token, password: passHash });
     }
   };
+
+  /**
+   * Admin Side
+   **/
+
+  public registrationNewAdmin = async (body: AdminRegistrationBody, authUser: any): Promise<void> => {
+    const admin = await usersRepository.getAdminById(authUser.id);
+    if(admin.superAdmin !== true){
+      throw new BadRequestException({
+        status: 403,
+        error: lang["EN"].permitions_denied,
+      }, "403");
+
+    }
+    const checkUser = await usersRepository.getUserByEmailOrUndefined(body.email);
+    if (checkUser !== undefined) {
+      throw new BadRequestException({
+        status: 400,
+        error: lang["EN"].email_already_used,
+      }, "400");
+    }
+    const pass = await crypto.pbkdf2Sync(body.password, process.env.SECRET, 1000, 64, "sha512");
+    const passHash = pass.toString('hex');
+    const data = {
+      username: body.username,
+      email: body.email,
+      firstName: body.firstName,
+      lastName: body.lastName,
+      gender: body.gender,
+      role: UserRoles.admin,
+      status: UserStatuses.active,
+      password: passHash,
+      birthday: body.birthday,
+      oldPassword: passHash,
+      superAdmin: false,
+    }
+    const userId = await usersRepository.insertOne(data);
+    const user = await usersRepository.getUserById(userId);
+    const token = await jwt.sign({ id: user.id, role: user.role });
+    await usersRepository.updateOneById(user.id, { token: token });
+  };
+
+
+  public getUsersList = async (authUser: any): Promise<any> =>{
+    const admin = usersRepository.getAdminById(authUser.id);
+    if(admin === undefined){
+      throw new BadRequestException({
+        status: 403,
+        error: lang["EN"].permitions_denied,
+      }, "403");
+    }
+    return await usersRepository.getUserList();
+
+  }
+
 }
 
 

@@ -55,6 +55,9 @@ export class User {
   @Column({name: "old_password", type: "varchar", default: null})
   oldPassword!: string;
 
+  @Column({name: "super_admin", type: "boolean", default: false})
+  superAdmin!: boolean;
+
   @Column({name: "created_at", type: "timestamp", default: () => "CURRENT_TIMESTAMP"})
   createdAt!: Date;
 }

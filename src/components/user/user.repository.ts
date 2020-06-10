@@ -1,5 +1,5 @@
 import { DeepPartial, getRepository } from 'typeorm';
-import { User } from './user.entities';
+import { User, UserRoles } from './user.entities';
 import { NotFoundError, RequestError } from '../../utils/app-errors';
 import { lang } from '../../utils/lang';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
@@ -99,6 +99,38 @@ export class UsersRepository {
     };
   };
 
+
+
+  public getAdminById = async (id: number): Promise<User> => {
+    const result = await getRepository(User)
+      .createQueryBuilder("users")
+      .where("users.id = :id and users.role = :role", {id: id, role: UserRoles.admin})
+      .getOne();
+    if (result === undefined) {
+      throw new BadRequestException({
+        status:400,
+        error: lang["EN"].admin_not_found,
+      }, "400");
+    }
+    return result;
+  };
+
+  public getUserList = async (): Promise<any> =>{
+    const result = await getRepository(User).find();
+    return result.map((item) => {
+      return {
+        id: item.id,
+        username: item.username,
+        firstName: item.firstName,
+        lastName: item.lastName,
+        email: item.email,
+        role: item.role,
+        birthday: item.birthday,
+        gender: item.gender,
+        createdAt: item.createdAt
+      };
+    });
+  }
 }
 
 export const usersRepository = new UsersRepository();

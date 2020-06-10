@@ -1,6 +1,7 @@
 import { Body, Controller, Get, HttpCode, Post, Query } from '@nestjs/common';
 import { UserService } from './user.service';
 import {
+  AdminRegistrationBody,
   ChangePasswordBody,
   ForgotPasswordQuery,
   LoginBody,
@@ -56,4 +57,23 @@ export class UserController {
   restorePassword(@Body() body: RestorePasswordBody, @AuthUser() authUser: any): Promise<void>{
     return this.userService.restorePassword(body.password, authUser);
   }
+
+  /**
+   * Admin Side
+   **/
+
+  @Post("/admin/registration")
+  @HttpCode(200)
+  registrationNewAdmin(@Body() body: AdminRegistrationBody, @AuthUser() authUser: any): Promise<void> {
+    return this.userService.registrationNewAdmin(body, authUser);
+  }
+
+  @Get("/getUsersList")
+  @HttpCode(200)
+  getUsersList(@AuthUser() authuser: any): Promise<any>{
+    return this.userService.getUsersList(authuser);
+  }
+
+
+
 }
