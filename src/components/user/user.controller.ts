@@ -79,6 +79,7 @@ export class UserController {
   changeUserRoleByAdmin(@Body() body: ChangeUserRoleByAdminBody, @AuthUser() authUser: any): Promise<void>{
     return this.userService.changeUserRoleByAdmin(body, authUser);
   }
-//создать новый эндпоинт в котором супер админ может поменять роль у пользователя
+
+
 
 }
