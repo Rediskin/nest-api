@@ -2,7 +2,7 @@ import { Body, Controller, Get, HttpCode, Post, Query } from '@nestjs/common';
 import { UserService } from './user.service';
 import {
   AdminRegistrationBody,
-  ChangePasswordBody,
+  ChangePasswordBody, ChangeUserRoleByAdminBody,
   ForgotPasswordQuery,
   LoginBody,
   RegistrationBody,
@@ -70,10 +70,15 @@ export class UserController {
 
   @Get("/getUsersList")
   @HttpCode(200)
-  getUsersList(@AuthUser() authuser: any): Promise<any>{
-    return this.userService.getUsersList(authuser);
+  getUsersList(@AuthUser() authUser: any): Promise<any>{
+    return this.userService.getUsersList(authUser);
   }
 
-
+  @Post("/admin/changeUserRole")
+  @HttpCode(200)
+  changeUserRoleByAdmin(@Body() body: ChangeUserRoleByAdminBody, @AuthUser() authUser: any): Promise<void>{
+    return this.userService.changeUserRoleByAdmin(body, authUser);
+  }
+//создать новый эндпоинт в котором супер админ может поменять роль у пользователя
 
 }

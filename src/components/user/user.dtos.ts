@@ -1,4 +1,4 @@
-import { IsEmail, IsOptional, IsString, isValidationOptions } from 'class-validator';
+import { IsEmail, IsNumber, IsOptional, IsString, isValidationOptions } from 'class-validator';
 
 export class LoginBody {
   @IsEmail()
@@ -101,5 +101,13 @@ export class AdminRegistrationBody {
 
   @IsString()
   gender!: string;
+
+}
+export class ChangeUserRoleByAdminBody{
+  @IsNumber()
+  userId!: number;
+
+  @IsString()
+  userRole!: string;
 
 }

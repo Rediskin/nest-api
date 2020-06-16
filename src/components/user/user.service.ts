@@ -1,5 +1,12 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { AdminRegistrationBody, ChangePasswordBody, LoginBody, RegistrationBody, UpdateOneByIdBody } from './user.dtos';
+import {
+  AdminRegistrationBody,
+  ChangePasswordBody,
+  ChangeUserRoleByAdminBody,
+  LoginBody,
+  RegistrationBody,
+  UpdateOneByIdBody,
+} from './user.dtos';
 import * as crypto from 'crypto';
 import { jwt } from '../../utils/jwt';
 import { usersRepository } from './user.repository';
@@ -184,7 +191,7 @@ export class UserService {
 
 
   public getUsersList = async (authUser: any): Promise<any> =>{
-    const admin = usersRepository.getAdminById(authUser.id);
+    const admin = await usersRepository.getAdminById(authUser.id);
     if(admin === undefined){
       throw new BadRequestException({
         status: 403,
@@ -195,6 +202,19 @@ export class UserService {
 
   }
 
+  public changeUserRoleByAdmin = async (body: ChangeUserRoleByAdminBody, authUser: any): Promise<void> =>{
+    const admin = await usersRepository.getAdminById(authUser.id);
+    // if(admin.superAdmin === false){
+    if(!admin.superAdmin){ //аналог верхней записи для булевых выражний и со значением undefined or null
+      throw new BadRequestException({
+        status: 403,
+        error: lang["EN"].permitions_denied,
+      }, "403");
+    }
+    const user = await usersRepository.getUserById(body.userId);
+    await usersRepository.updateOneById(user.id, { role: body.userRole });
+
+  }
 }
 
 
