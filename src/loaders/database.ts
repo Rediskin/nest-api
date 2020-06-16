@@ -1,5 +1,5 @@
 import {createConnection } from "typeorm";
-import { User } from '../components/user/user.entities';
+import { User, UserMasterData } from '../components/user/user.entities';
 
 
 export default async function (): Promise<any>{
@@ -12,6 +12,7 @@ export default async function (): Promise<any>{
     database: "nodejsserver",
     entities: [
       User,
+      UserMasterData
     ]
   });
   console.log("Connected to database");

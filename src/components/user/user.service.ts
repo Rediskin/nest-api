@@ -5,11 +5,11 @@ import {
   ChangeUserRoleByAdminBody,
   LoginBody,
   RegistrationBody,
-  UpdateOneByIdBody,
+  UpdateOneByIdBody, UpdateUserMasterDataBody,
 } from './user.dtos';
 import * as crypto from 'crypto';
 import { jwt } from '../../utils/jwt';
-import { usersRepository } from './user.repository';
+import { usersRepository, userMasterDataRepository } from './user.repository';
 import { User, UserRoles, UserStatuses } from './user.entities';
 import { lang } from '../../utils/lang';
 import * as randomstring from 'randomstring';
@@ -213,6 +213,18 @@ export class UserService {
     }
     const user = await usersRepository.getUserById(body.userId);
     await usersRepository.updateOneById(user.id, { role: body.userRole });
+
+  }
+
+  public updateUserMasterData = async (body: UpdateUserMasterDataBody, authUser: any): Promise<void> =>{
+    const user = await usersRepository.getUserWithMasterData(authUser.id);
+    console.log(user)
+    if (user.userMasterData === null) {
+      const masterDataId = await userMasterDataRepository.insertOne({location: "Ukraine"});
+      // const masterDataIdNumber = parseInt(String(masterDataId));
+      console.log(masterDataId);
+      await usersRepository.updateOneById(user.id, { masterDataId: masterDataId})
+    }
 
   }
 }

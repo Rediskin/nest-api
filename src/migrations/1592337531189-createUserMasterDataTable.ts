@@ -1,4 +1,4 @@
-import { MigrationInterface, QueryRunner, Table, TableForeignKey } from 'typeorm';
+import { MigrationInterface, QueryRunner, Table, TableColumn, TableForeignKey } from 'typeorm';
 
 export class createUserMasterDataTable1592337531189 implements MigrationInterface {
 
@@ -20,26 +20,34 @@ export class createUserMasterDataTable1592337531189 implements MigrationInterfac
                 {name: "house_number", type: "varchar", isNullable: true},
                 {name: "apartments", type: "int", isNullable: true},
                 {name: "card_number", type: "int", isNullable: true},
-                {name: "card_month", type: "int", isNullable: true},
+                {name: "card_month", type: "varchar", isNullable: true},
                 {name: "card_year", type: "int", isNullable: true},
                 {name: "delivery_office_number", type: "int", isNullable: true},
                 {name: "delivery_office_address", type: "varchar", isNullable: true},
                 {name: "delivery_office_city", type: "varchar", isNullable: true},
                 {name: "phone_number", type: "varchar", isNullable: true},
                 {name: "fax_number", type: "varchar", isNullable: true},
-                {name: "user_id", type: "int", isNullable: false},
             ]
         }));
-
-        await queryRunner.createForeignKey("user_master_data", new TableForeignKey({
-            columnNames: ["user_id"],
+        await queryRunner.addColumn("users", new TableColumn({
+            name: "master_data_id",
+            type: "int",
+            isNullable: true,
+            default: null
+        }))
+        await queryRunner.createForeignKey("users", new TableForeignKey({
+            columnNames: ["master_data_id"],
             referencedColumnNames: ["id"],
-            referencedTableName: "users",
+            referencedTableName: "user_master_data",
             onDelete: "CASCADE"
         }))
     }
 
     public async down(queryRunner: QueryRunner): Promise<any> {
+        const table = await queryRunner.getTable("users");
+        const foreignKey = table.foreignKeys.find(fk => fk.columnNames.indexOf("master_data_id") !== 1);
+        await queryRunner.dropForeignKey("users", foreignKey);
+        await queryRunner.dropColumn("users", "master_data_id")
         await queryRunner.dropTable("user_master_data");
     }
 

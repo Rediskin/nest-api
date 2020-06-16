@@ -1,4 +1,4 @@
-import { IsEmail, IsNumber, IsOptional, IsString, isValidationOptions } from 'class-validator';
+import { IsEmail, IsNumber, IsOptional, IsString, isValidationOptions, Matches } from 'class-validator';
 
 export class LoginBody {
   @IsEmail()
@@ -103,6 +103,7 @@ export class AdminRegistrationBody {
   gender!: string;
 
 }
+
 export class ChangeUserRoleByAdminBody{
   @IsNumber()
   userId!: number;
@@ -111,3 +112,63 @@ export class ChangeUserRoleByAdminBody{
   userRole!: string;
 
 }
+
+export class UpdateUserMasterDataBody {
+  @IsOptional()
+  @IsString()
+  location: string;
+
+  @IsOptional()
+  @IsString()
+  city: string;
+
+  @IsOptional()
+  @Matches(/^[0-9]{5}$/)
+  postCode: number;
+
+  @IsOptional()
+  @IsString()
+  street: string;
+
+  @IsOptional()
+  @IsString()
+  houseNumber: string;
+
+  @IsOptional()
+  @Matches(/^[0-9]{3}$/)
+  apartments: number;
+
+  @IsOptional()
+  @Matches(/^[0-9]{16}$/)
+  cardNumber: number;
+
+  @IsOptional()
+  @Matches(/^[0-9]{2}$/)
+  cardMonth: string;
+
+  @IsOptional()
+  @Matches(/^[0-9]{2}$/)
+  cardYear: number;
+
+  @IsOptional()
+  @Matches(/^[0-9]{4}$/)
+  deliveryOfficeNumber: number;
+
+  @IsOptional()
+  @IsString()
+  deliveryOfficeAddress: string;
+
+  @IsOptional()
+  @IsString()
+  deliveryOfficeCity: string;
+
+  @IsOptional()
+  @IsString()
+  phoneNumber: string;
+
+  @IsOptional()
+  @IsString()
+  faxNumber: string;
+
+}
+

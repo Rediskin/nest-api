@@ -7,7 +7,7 @@ import {
   LoginBody,
   RegistrationBody,
   RestorePasswordBody,
-  UpdateOneByIdBody,
+  UpdateOneByIdBody, UpdateUserMasterDataBody,
 } from './user.dtos';
 import { AuthUser } from '../../decorators/authUser';
 
@@ -80,6 +80,10 @@ export class UserController {
     return this.userService.changeUserRoleByAdmin(body, authUser);
   }
 
-
+  @Post("/user/updateMasterData")
+  @HttpCode(200)
+  updateUserMasterData(@Body() body: UpdateUserMasterDataBody,@AuthUser() authUser: any): Promise<void>{
+    return this.userService.updateUserMasterData(body, authUser);
+  }
 
 }

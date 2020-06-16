@@ -1,5 +1,5 @@
 import { DeepPartial, getRepository } from 'typeorm';
-import { User, UserRoles } from './user.entities';
+import { User, UserMasterData, UserRoles } from './user.entities';
 import { NotFoundError, RequestError } from '../../utils/app-errors';
 import { lang } from '../../utils/lang';
 import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
@@ -100,6 +100,20 @@ export class UsersRepository {
   };
 
 
+  public getUserWithMasterData = async (id: number): Promise<User> =>{
+    const result = await getRepository(User)
+      .createQueryBuilder("users")
+      .leftJoinAndSelect("users.userMasterData", "masterData")
+      .where("users.id = :id", {id})
+      .getOne();
+    if (result === undefined){
+      throw new BadRequestException({
+        status:400,
+        error: lang["EN"].user_not_found,
+      }, "400");
+    }
+    return result;
+  }
 
   public getAdminById = async (id: number): Promise<User> => {
     const result = await getRepository(User)
@@ -134,3 +148,14 @@ export class UsersRepository {
 }
 
 export const usersRepository = new UsersRepository();
+
+export class UserMasterDataRepository {
+
+  public insertOne = async (data: DeepPartial<UserMasterData>): Promise<number> => {
+    const result = await getRepository(UserMasterData).insert(data);
+    return result.identifiers[0].id;
+  };
+
+}
+
+export const userMasterDataRepository = new UserMasterDataRepository();
